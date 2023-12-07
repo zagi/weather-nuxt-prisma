@@ -12,7 +12,7 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://weather:password@db:5432/weather?schema=public
-      - NUXT_WEATHER_API_KEY=d390c0169f7be71a1f71aadef2488487
+      - NUXT_WEATHER_API_KEY=d390c0169f7be71a1f71aadef2488487 # this api key is revoked
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - POSTGRES_USER=weather
