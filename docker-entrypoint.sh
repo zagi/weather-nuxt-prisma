@@ -8,6 +8,6 @@ done
 
 echo "Postgres is up - executing command"
 
-npx prisma db push --skip-generate
+npx prisma --skip-generate db push 
 
 exec npm run start

@@ -1,7 +1,7 @@
-# weather-nuxt-prisma-sample
+# weather-nuxt-sample
 
 Run it with docker:
 `docker-compose up`
 
-After building the address is:
-`http://weather:8080`
+After building the address open and give it a try:
+`http://localhost:8080`
