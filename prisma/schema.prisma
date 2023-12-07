@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native","debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+}
+
+model City {
+  id       String    @id @default(cuid())
+  name     String
+  country  String
+  lat      Float
+  lon      Float
+  weathers Weather[]
+}
+
+model Weather {
+  id          String   @id @default(cuid())
+  city        City     @relation(fields: [cityId], references: [id])
+  cityId      String
+  createdAt   DateTime @default(now())
+  temperature Int
+  unit        String
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  request   String
+  response  String
+  status    Int
+  desc      String
+}
