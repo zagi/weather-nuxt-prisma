@@ -1,12 +1,17 @@
-import { CurrentWeatherDataResponse } from "~/types/weather.d";
+import { CurrentWeatherDataResponse, City, Weather } from "~/types/weather.d";
 import { getCities, createWeather } from "../utils/cityService";
 import { createLog } from "../utils/logService";
+import { EventHandlerContext, RuntimeConfig } from "someContextType"; // Replace with actual context type
 
-async function fetchWeatherData(city, config) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${config.weatherApiKey}`;
+async function fetchWeatherData(
+  city: City,
+  config: RuntimeConfig
+): Promise<Weather | null> {
+  const url: string = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${config.weatherApiKey}`;
 
   try {
-    const res = await $fetch<CurrentWeatherDataResponse>(url);
+    const res: CurrentWeatherDataResponse | null =
+      await $fetch<CurrentWeatherDataResponse>(url);
 
     if (!res) {
       createLog(url, "", 200, `Error fetching weather for ${city.name}`);
@@ -21,7 +26,7 @@ async function fetchWeatherData(city, config) {
     );
     const { temp } = res.main;
     return createWeather(city.id, temp, "metric");
-  } catch (error) {
+  } catch (error: any) {
     createLog(
       url,
       "",
@@ -32,22 +37,24 @@ async function fetchWeatherData(city, config) {
   }
 }
 
-export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig(event);
+export default defineEventHandler(async (event: EventHandlerContext) => {
+  const config: RuntimeConfig = useRuntimeConfig(event);
 
   try {
-    const cities = await getCities();
-    const weatherPromises = cities.map((city) =>
+    const cities: City[] = await getCities();
+    const weatherPromises: Promise<Weather | null>[] = cities.map((city) =>
       fetchWeatherData(city, config)
     );
-    const weatherResults = await Promise.all(weatherPromises);
+    const weatherResults: (Weather | null)[] = await Promise.all(
+      weatherPromises
+    );
 
-    const successfulUpdates = weatherResults.filter(
-      (result) => result !== null
+    const successfulUpdates: Weather[] = weatherResults.filter(
+      (result): result is Weather => result !== null
     );
 
     return { success: "Updated", updatedCount: successfulUpdates.length };
-  } catch (error) {
+  } catch (error: any) {
     throw createError({
       statusCode: 500,
       statusMessage: `Failed to update weather data: ${error.message}`,
