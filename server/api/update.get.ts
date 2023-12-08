@@ -1,11 +1,10 @@
 import { CurrentWeatherDataResponse, City, Weather } from "~/types/weather.d";
 import { getCities, createWeather } from "../utils/cityService";
 import { createLog } from "../utils/logService";
-import { EventHandlerContext, RuntimeConfig } from "someContextType"; // Replace with actual context type
 
 async function fetchWeatherData(
   city: City,
-  config: RuntimeConfig
+  config: any
 ): Promise<Weather | null> {
   const url: string = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${config.weatherApiKey}`;
 
@@ -37,8 +36,8 @@ async function fetchWeatherData(
   }
 }
 
-export default defineEventHandler(async (event: EventHandlerContext) => {
-  const config: RuntimeConfig = useRuntimeConfig(event);
+export default defineEventHandler(async (event: any) => {
+  const config: any = useRuntimeConfig(event);
 
   try {
     const cities: City[] = await getCities();
