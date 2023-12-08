@@ -29,10 +29,7 @@ const fetchWeather = async () => {
         loading.value = false;
     }
 };
-
-onMounted(async () => {
-    fetchWeather();
-});
+await fetchWeather();
 
 async function fetchNewData() {
     try {
