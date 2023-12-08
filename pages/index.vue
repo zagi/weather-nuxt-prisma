@@ -15,32 +15,33 @@
 <script setup lang="ts">
 const loading = useState<boolean>('loading');
 const toast = useState<Toast>('toast');
-const cities = useState('cities', () => {
+const cities = useState<City[]>('cities', () => {
     return [];
 });
-const { data } = await useFetch('/api/weather')
-onMounted(() => {
-    cities.value = data;
-    loading.value = false;
+
+const fetchWeather = async () => {
+    try {
+        const { data } = await useFetch<City[]>('/api/weather');
+        cities.value = data.value || [];
+    } catch (err) {
+        toast.value = { show: true, type: 'error', message: 'Failed to fetch weather data' };
+    } finally {
+        loading.value = false;
+    }
+};
+
+onMounted(async () => {
+    fetchWeather();
 });
+
 async function fetchNewData() {
     try {
         loading.value = true;
-        await useFetch('/api/update')
-        const { data } = await useFetch('/api/weather')
-        cities.value = data;
-        loading.value = false;
-        toast.value = <Toast>{
-            show: true,
-            type: 'success',
-            message: 'Weather data updated successfully'
-        }
+        await useFetch('/api/update');
+        await fetchWeather();
+        toast.value = { show: true, type: 'success', message: 'Weather data updated successfully' };
     } catch (err) {
-        toast.value = <Toast>{
-            show: true,
-            type: 'error',
-            message: 'Something went wrong'
-        }
+        toast.value = { show: true, type: 'error', message: 'Something went wrong' };
     }
 }
 </script>
