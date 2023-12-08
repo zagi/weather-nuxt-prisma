@@ -7,4 +7,4 @@ In `docker-compose.yml` set with your own API key for open weather map:
 Run it with docker:
 `docker-compose up`
 
-After building the http://localhost:8080 address and give it a try
+After building the http://localhost:3000 address and give it a try
