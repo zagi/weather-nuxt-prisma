@@ -20,7 +20,7 @@
                     <tr v-for="row, rowIndex in data" :key="rowIndex">
                         <td>
                             <NuxtLink :to="`https://maps.google.com/?q=${row.lat},${row.lon}`" target="_blank">
-                            {{ row.name }}
+                                {{ row.name }}
                             </NuxtLink>
                         </td>
                         <td>{{ row.country }}</td>
@@ -29,7 +29,15 @@
                         </td>
                         <td>{{ $dayjs(row.weathers[0].createdAt).format('YYYY-MM-DD HH:mm') }}</td>
                         <td>
-                            <button class="btn btn-xs" @click="openDetails(row)">Details</button>
+                            <button class="btn btn-xs mr-1" @click="openDetails(row)">
+                                <ListBulletIcon class="h-4 w-4" />
+                            </button>
+                            <button class="btn btn-xs mr-1" @click="fetchNewData(row)">
+                                <ArrowPathIcon class="h-4 w-4" />
+                            </button>
+                            <button class="btn btn-xs" @click="deleteCity(row)">
+                                <TrashIcon class="h-4 w-4" />
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -41,13 +49,15 @@
     </dialog>
 </template>
 <script setup lang="ts">
+import { ListBulletIcon, ArrowPathIcon, TrashIcon } from '@heroicons/vue/24/solid'
 defineProps({
     data: {
-        type: Array<any>,
+        type: Array<City>,
         required: true,
     },
-})
-
+});
+const emit = defineEmits(['updateData', 'deleteData']);
+const toast = useState<Toast>('toast');
 const modal: Ref<boolean> = ref(false);
 const modalItem: Ref<City | null> = ref(null);
 function toggleModal(): void {
@@ -57,5 +67,34 @@ function toggleModal(): void {
 function openDetails(row: any): void {
     modalItem.value = row;
     modal.value = true;
+}
+async function fetchNewData(city: City) {
+    try {
+        const { data } = await useFetch('/api/update', {
+            method: 'post',
+            body: {
+                cities: [city]
+            }
+        });
+        emit('updateData', city.id, data.value.updated[0]);
+        toast.value = { show: true, type: 'success', message: 'Weather data updated successfully' };
+    } catch (err) {
+        toast.value = { show: true, type: 'error', message: 'Something went wrong' };
+    }
+}
+
+async function deleteCity(city: City) {
+    try {
+        const { data } = await useFetch('/api/city', {
+            method: 'delete',
+            body: {
+                id: city.id
+            }
+        });
+        emit('deleteData', city.id);
+        toast.value = { show: true, type: 'success', message: 'City deleted successfully' };
+    } catch (err) {
+        toast.value = { show: true, type: 'error', message: 'Something went wrong' };
+    }
 }
 </script>

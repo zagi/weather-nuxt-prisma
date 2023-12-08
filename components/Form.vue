@@ -75,6 +75,6 @@ async function send() {
 }
 
 function showToast(type: 'success' | 'error', message: string) {
-    toast.value = { show: true, type, message };
+    toast.value = <Toast>{ show: true, type, message };
 }
 </script>

@@ -22,6 +22,21 @@ export async function getCity(id: string) {
   return city
 }
 
+export async function deleteCity(id: string) {
+  const deleteWeathersRows = prisma.weather.deleteMany({
+    where: {
+      cityId: id,
+    },
+  })
+  const deleteCityRow = prisma.city.delete({
+    where: {
+      id: id,
+    },
+  })
+  const transaction = await prisma.$transaction([deleteWeathersRows, deleteCityRow])
+  return transaction;
+}
+
 export async function createCity(
   name: string,
   country: string,
@@ -67,6 +82,13 @@ export async function createWeather(
         },
       },
     },
+    include: {
+      weathers: {
+        orderBy: {
+          id: 'desc',
+        }
+      },
+    }
   });
   return city;
 }

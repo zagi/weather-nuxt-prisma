@@ -38,9 +38,16 @@ async function fetchWeatherData(
 
 export default defineEventHandler(async (event: any) => {
   const config: any = useRuntimeConfig(event);
+  const body: { cities: string[] } = await readBody(event);
 
   try {
-    const cities: City[] = await getCities();
+    let cities: City[];
+    if(body.cities.length > 0) {
+      cities = body.cities;
+    } else {
+      cities = await getCities();
+    }
+    
     const weatherPromises: Promise<City | null>[] = cities.map((city) =>
       fetchWeatherData(city, config)
     );
@@ -52,7 +59,7 @@ export default defineEventHandler(async (event: any) => {
       (result): result is City => result !== null
     );
 
-    return { success: "Updated", updatedCount: successfulUpdates.length };
+    return { success: "Updated", updatedCount: successfulUpdates.length, updated: body.cities.length > 0 ? weatherResults : [] };
   } catch (error: any) {
     throw createError({
       statusCode: 500,
