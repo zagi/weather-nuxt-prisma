@@ -23,19 +23,17 @@
 </template>
   
 <script setup lang="ts">
-import { ref } from 'vue';
-
-const input = ref('');
+const input = ref<string>('');
 const items = ref<Array<string>>([]);
-const cityNames = ref(new Set<string>());
+const cityNames = ref<Set<string>>(new Set());
 const toast = useState<Toast>('toast');
-const cities = useState<Array<any>>('cities');
+const cities = useState<City[]>('cities');
 const loading = useState<boolean>('loading');
 
 const hasItems = computed(() => items.value.length > 0);
 
 watch(cities, (newCities) => {
-    cityNames.value = new Set(newCities.map(city => city.name));
+    cityNames.value = new Set(newCities.map((city: City) => city.name));
 });
 
 function addItem() {
@@ -61,12 +59,12 @@ async function send() {
     loading.value = true;
 
     try {
-        const { data } = await useFetch('/api/weather', {
+        const { data } = await useFetch<City[]>('/api/weather', {
             method: 'post',
             body: { cities: items.value }
         });
 
-        data.value.forEach((item: any) => cities.value.push(item));
+        data.value.forEach((item: City) => cities.value.push(item));
         showToast('success', 'City added successfully');
     } catch (err) {
         showToast('error', 'Something went wrong');
