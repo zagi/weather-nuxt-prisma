@@ -31,8 +31,8 @@ async function fetchAndLog<T>(
   return response;
 }
 
-export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig(event);
+export default defineEventHandler(async (event: any) => {
+  const config: any = useRuntimeConfig(event);
   const body: { cities: string[] } = await readBody(event);
 
   try {
