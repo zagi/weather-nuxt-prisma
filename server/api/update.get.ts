@@ -5,7 +5,7 @@ import { createLog } from "../utils/logService";
 async function fetchWeatherData(
   city: City,
   config: any
-): Promise<Weather | null> {
+): Promise<City | null> {
   const url: string = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=${config.weatherApiKey}`;
 
   try {
@@ -32,7 +32,7 @@ async function fetchWeatherData(
       404,
       `Failed to fetch weather for ${city.name}: ${error.message}`
     );
-    return null;
+    throw Error(error.message);
   }
 }
 
@@ -41,15 +41,15 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const cities: City[] = await getCities();
-    const weatherPromises: Promise<Weather | null>[] = cities.map((city) =>
+    const weatherPromises: Promise<City | null>[] = cities.map((city) =>
       fetchWeatherData(city, config)
     );
-    const weatherResults: (Weather | null)[] = await Promise.all(
+    const weatherResults: (City | null)[] = await Promise.all(
       weatherPromises
     );
 
-    const successfulUpdates: Weather[] = weatherResults.filter(
-      (result): result is Weather => result !== null
+    const successfulUpdates: City[] = weatherResults.filter(
+      (result): result is City => result !== null
     );
 
     return { success: "Updated", updatedCount: successfulUpdates.length };
