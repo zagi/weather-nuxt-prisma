@@ -37,7 +37,7 @@
         </div>
     </div>
     <dialog id="detail-modal" class="modal" :class="{ 'modal-open': modal }">
-        <Modal @close="toggleModal" :city="modalItem"></Modal>
+        <Modal @close="toggleModal" :city="modalItem" v-if="modal"></Modal>
     </dialog>
 </template>
 <script setup lang="ts">

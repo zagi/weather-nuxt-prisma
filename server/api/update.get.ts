@@ -1,4 +1,4 @@
-import { CurrentWeatherDataResponse, City, Weather } from "~/types/weather.d";
+import { CurrentWeatherDataResponse } from "~/types/weather.d";
 import { getCities, createWeather } from "../utils/cityService";
 import { createLog } from "../utils/logService";
 
